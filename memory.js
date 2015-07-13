@@ -5,9 +5,7 @@ var host = "lab-lamp.scm.cityu.edu.hk",
   mode = CLKTEST, stepMs = 1000, bgColor = 0,
   fontColor = 255.0, bgCycleUp = true, font;
   
-var rts, canvasWidth = 1100, canvasHeight = 800;
-var textColor = [];
-var w = canvasWidth - 50, h = canvasHeight - 100;
+var rts, canvasWidth = 1100, canvasHeight = 800, fontSize = 48;
 
 var words = ['A', 'raw', 'memory', '.', 'Church', '.', 'A', 'loud', 'room', 'with', 'children', 'playing', ',', 'thoughtlessly', '.', 'Wandering', 'wildly', '.', 'I', 'stand', 'small', 'and', 'young', 'within', 'a', 'chaotic', 'garden', 'of', 'little', 'ideas', 'and', 'unaware', ',', 'tiny', 'minds', '.', 'Colorful', 'toys', 'litter', 'the', 'ground', 'and', 'posters', 'of', 'silent', 'saints', 'loom', '.', 'My', 'mother', 'rises', 'tall', 'and', 'aware', '.', 'She', 'departs', 'gracefully', '.', 'I', 'pull', 'a', 'blue', ',', 'plastic', 'bucket', 'to', 'the', 'door', 'and', 'climb', 'it', '.', 'Staring', 'through', 'the', 'window', '.', 'Bells', 'ringing', '.', 'My', 'mom', 'is', 'walking', 'down', 'a', 'long', 'hall', ',', 'bright', 'with', 'holy', 'light', '.', 'I', 'am', 'trembling', ',', 'abiding', 'while', 'the', 'adults', 'pray', '.', 'I', 'play', ',', 'barely', ',', 'with', 'a', 'little', 'red', 'ambulance', ',', 'watching', 'the', 'empty', 'corridor', '.'];
 var allpos = ['-', 'a', 'nn', '-', 'nn', '-', '-', 'a', 'nn', '-', 'nns', 'vbg', '-', 'r', '-', 'vbg', 'r', '-', '-', 'vb', 'a', '-', 'a', '-', '-', 'a', 'nn', '-', 'a', 'nns', '-', 'a', '-', 'a', 'nns', '-', 'a', 'nns', 'vb', '-', 'nn', '-', 'nns', '-', 'a', 'nns', 'vb', '-', '-', 'nn', 'vbz', 'a', '-', 'a', '-', '-', 'vbz', 'r', '-', '-', 'vb', '-', 'a', '-', 'a', 'nn', '-', '-', 'nn', '-', 'vb', '-', '-', 'vbg', '-', '-', 'nn', '-', 'nns', 'vbg', '-', '-', 'nn', '-', 'vbg', '-', '-', 'a', 'nn', '-', 'a', '-', 'a', 'nn', '-', '-', 'vb', 'vbg', '-', 'vbg', '-', '-', 'nns', 'vb', '-', '-', 'vb', '-', 'r', '-', '-', '-', 'a', 'a', 'nn', '-', 'vbg', '-', 'a', 'nn', '-'];
@@ -55,56 +53,27 @@ function draw() {
 
 function drawText() {
 
-  noStroke();
-  
-  var rowHeight = 40;
-  
-  var x = 30;
-  var y = 60;
-  
-  for (var i = 0; i < words.length; i++) {
-	  fill(colorVals[i]);
-	  
-	  wordPos(i);
-	  
-	  text(words[i], x, y);
-  }
-  
-  function wordPos(i) {
-	  
-	  var temp = xPosition(i);
-	  
-	  rowHeight = 60;
-	  
-	  var tempY = Math.floor(temp / w);
-	  
-	  y = ( tempY + 1 ) * rowHeight;
-	  
-	  if (temp > w) {
-		  x = temp % w;
-	  }
-	  else {
-		  y = rowHeight;
-		  x = temp;
-	  }
-	  
-	  function xPosition(i) {
-		  if (i == 0) {
-			  return 30;
-		  }
-		  else {
-			  return textWidth(words[i - 1]) + xPosition(i - 1);
-		  }
-	  }
-  }
+	noStroke();
+
+	for (var i = 0; i < rts.length; i++) {
+		fill(colorVals[i]);
+		text(rts[i].text(), rts[i].get('x'), rts[i].get('y'));
+	}
 }
 
 function reformat() {
 
   rts = {};
-  
-  rts.text = RiTa.untokenize(words);
     
+  var theText = RiTa.untokenize(words);
+  
+  var args = {
+	  font: font, fontSize: fontSize, text: theText,
+	  x: 30, y: 60, w: canvasWidth - 50, h: canvasHeight - 100,
+  };
+  
+  rts = RiString.createWords(args);
+  
   timeStamp = millis();
 }
 
@@ -359,7 +328,7 @@ function onReplaceEvent(re) {
   
 function makeSubstitution(newWord, idx) {
 	    
-	var all = RiText.instances;
+	var all = rts;
 
 	for (var t = 0; t < all.length; t++) {
 		
