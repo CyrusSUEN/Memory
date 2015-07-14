@@ -1,12 +1,12 @@
 var host = "lab-lamp.scm.cityu.edu.hk", port = 8094, wordnet, dbug = 0,
 	wordLists = [], colorVals = [], timeStamp = 0, bgTimeStamp = 0,
-  mode = 0, stepMs = 1000, bgColor = 0, bgCycleUp = true, rts,
-  font, fontColor = 255, fontSize = 48;
+  mode = 0, stepMs = 1000, bgColor = 0, bgCycleUp = true, rts, lines,
+  font, fontColor = 255, fontSize = 48, leading = 56, textX = 30, textY = 30;
 
 var words = ['A', 'raw', 'memory', '.', 'Church', '.', 'A', 'loud', 'room', 'with', 'children', 'playing', ',', 'thoughtlessly', '.', 'Wandering', 'wildly', '.', 'I', 'stand', 'small', 'and', 'young', 'within', 'a', 'chaotic', 'garden', 'of', 'little', 'ideas', 'and', 'unaware', ',', 'tiny', 'minds', '.', 'Colorful', 'toys', 'litter', 'the', 'ground', 'and', 'posters', 'of', 'silent', 'saints', 'loom', '.', 'My', 'mother', 'rises', 'tall', 'and', 'aware', '.', 'She', 'departs', 'gracefully', '.', 'I', 'pull', 'a', 'blue', ',', 'plastic', 'bucket', 'to', 'the', 'door', 'and', 'climb', 'it', '.', 'Staring', 'through', 'the', 'window', '.', 'Bells', 'ringing', '.', 'My', 'mom', 'is', 'walking', 'down', 'a', 'long', 'hall', ',', 'bright', 'with', 'holy', 'light', '.', 'I', 'am', 'trembling', ',', 'abiding', 'while', 'the', 'adults', 'pray', '.', 'I', 'play', ',', 'barely', ',', 'with', 'a', 'little', 'red', 'ambulance', ',', 'watching', 'the', 'empty', 'corridor', '.'];
 var allpos = ['-', 'a', 'nn', '-', 'nn', '-', '-', 'a', 'nn', '-', 'nns', 'vbg', '-', 'r', '-', 'vbg', 'r', '-', '-', 'vb', 'a', '-', 'a', '-', '-', 'a', 'nn', '-', 'a', 'nns', '-', 'a', '-', 'a', 'nns', '-', 'a', 'nns', 'vb', '-', 'nn', '-', 'nns', '-', 'a', 'nns', 'vb', '-', '-', 'nn', 'vbz', 'a', '-', 'a', '-', '-', 'vbz', 'r', '-', '-', 'vb', '-', 'a', '-', 'a', 'nn', '-', '-', 'nn', '-', 'vb', '-', '-', 'vbg', '-', '-', 'nn', '-', 'nns', 'vbg', '-', '-', 'nn', '-', 'vbg', '-', '-', 'a', 'nn', '-', 'a', '-', 'a', 'nn', '-', '-', 'vb', 'vbg', '-', 'vbg', '-', '-', 'nns', 'vb', '-', '-', 'vb', '-', 'r', '-', '-', '-', 'a', 'a', 'nn', '-', 'vbg', '-', 'a', 'nn', '-'];
 var commons = ['.', ',', 'one', 'I', 'play', 'pull', 'all', 'a', 'an', 'and', 'is', 'it', 'about', 'above', 'across', 'after', 'against', 'around', 'at', 'before', 'behind', 'below', 'beneath', 'beside', 'besides', 'between', 'beyond', 'but', 'by', 'each', 'down', 'during', 'except', 'for', 'from', 'in', 'inside', 'into', 'there', 'like', 'my', 'near', 'of', 'off', 'on', 'out', 'outside', 'over', 'since', 'the', 'through', 'throughout', 'till', 'to', 'toward', 'under', 'until', 'wait', 'stand', 'plus', 'up', 'upon', 'with', 'without', 'according', 'because', 'way', 'addition', 'front', 'regard', 'instead', 'account'];
-var ignores = '|womb-to-tomb|hearable|lav|bimester|quadripara|quintipara|lebensraum|ells|chutzpanik|free-lances|puerpera|inspissate|pyrolatries|inexperient|primipara|nonesuches|jimhickeys|brainpowers|cacodaemons|fakirs|kalifahs|nonsuches|macadamize|squatty|web|professionalise|vascularize|meagerly|breathalysers|';
+var ignores = '|womb-to-tomb|hearable|lav|bimester|quadripara|quintipara|lebensraum|ells|chutzpanik|free-lances|puerpera|inspissate|pyrolatries|inexperient|primipara|nonesuches|jimhickeys|brainpowers|cacodaemons|fakirs|kalifahs|nonsuches|macadamize|squatty|web|professionalise|vascularize|meagerly|breathalysers|higgledy-piggledy|';
 
 function preload() {
 
@@ -15,8 +15,9 @@ function preload() {
 
 function setup() {
 
-  createCanvas(1100, 800).parent("p5jsContainer");
+  createCanvas(1100, 900);
   textFont(font, fontSize);
+  noStroke();
 
   wordnet = new RiWordNet(host, port);
 
@@ -40,12 +41,19 @@ function draw() {
   }
 
   tryReplacement();
+  drawText();
+}
 
-  background(bgColor);
-	for (var i = 0; i < rts.length; i++) {
-		fill(colorVals[i]);
-		text(rts[i].text(), rts[i].get('x'), rts[i].get('y'));
-	}
+function drawText() {
+
+  background(255);
+  fill(bgColor); // draw bg based on # of lines
+  rect(0,0,width, lines * leading + textY * 2);
+
+  for (var i = 0; i < rts.length; i++) {
+    fill(colorVals[i]);
+    text(rts[i].text(), rts[i].get('x'), rts[i].get('y'));
+  }
 }
 
 function reformat() {
@@ -53,21 +61,12 @@ function reformat() {
   var theText = RiTa.untokenize(words);
 
   rts = RiString.createWords({
-	  font: font, fontSize: fontSize, text: theText,
-	  x: 30, y: 40, w: width - 50, h: height - 60,
+	  font: font, fontSize: fontSize, leading: leading, text: theText,
+	  x: textX, y: textY, w: width - 50, h: height - 30,
   });
 
+  lines = countLines();
   timeStamp = millis();
-}
-
-function isCommon(word) {
-
-  var test = word.replace(/\.$/, '');
-  for (var i = 0; i < commons.length; i++) {
-    if (commons[i] === test)
-      return true;
-  }
-  return false;
 }
 
 function tryReplacement() {
@@ -90,23 +89,23 @@ function tryReplacement() {
 
     timeStamp = millis();
 
-    // switch statement which either changes verbs, nouns,
-    // adverbs, or adjectives; or remembers an older word
+    // switch statement which either changes adjectives, nouns,
+    // adverbs, verbs; or, remembers an older word (9)
     switch (mode) {
       case 1:
-        if (allpos[replaceIdx].indexOf("a") == 0)
+        if (allpos[replaceIdx].indexOf("a") === 0)
           replaceAdj(toChange, replaceIdx);
         break;
       case 2:
-        if (allpos[replaceIdx].indexOf("n") == 0)
+        if (allpos[replaceIdx].indexOf("n") === 0)
           replaceNoun(toChange, replaceIdx);
         break;
       case 3:
-        if (allpos[replaceIdx].indexOf("r") == 0)
+        if (allpos[replaceIdx].indexOf("r") === 0)
           replaceAdv(toChange, replaceIdx);
         break;
       case 4:
-        if (allpos[replaceIdx].indexOf("v") == 0)
+        if (allpos[replaceIdx].indexOf("v") === 0)
           replaceVerb(toChange, replaceIdx);
         break;
       case 9:
@@ -123,44 +122,42 @@ function replaceAdj(toChange, replaceIdx) {
 
 	wordnet.getAllSynonyms(toChange, "a", function(asyns) {
 
-		if (asyns.length) {
+	  if (asyns.length) {
 
-			var newWord = asyns[Math.floor(random(asyns.length))];
-			if (dbug) console.log("replaceAdj(): '" + toChange + "' -> " + newWord);
-			fireReplaceEvent(replaceIdx, newWord);
-		}
+	    var newWord = asyns[Math.floor(random(asyns.length))];
+	    if (dbug) console.log("replaceAdj(): '" + toChange + "' -> " + newWord);
+	    fireReplaceEvent(replaceIdx, newWord);
+	  }
 	});
-
 }
 
 function replaceAdv(toChange, replaceIdx) {
 
 	wordnet.getAllDerivedTerms(toChange, "r", function(dts) {
 
-		if (dts.length > 0) {
+	  if (dts.length > 0) {
 
-			var randAdj = dts[Math.floor(random(dts.length))];
-			wordnet.getAllSynonyms(randAdj, "a", function(asyns) {
+	    var randAdj = dts[Math.floor(random(dts.length))];
+	    wordnet.getAllSynonyms(randAdj, "a", function(asyns) {
 
-				if (asyns.length > 0) {
+	      if (asyns.length > 0) {
 
-					var adj = asyns[Math.floor(random(asyns.length))];
-					var newStr = toAdverb(adj);
-					if (dbug) console.log("Adverbify: '" + adj + "' -> " + newStr);
+	        var adj = asyns[Math.floor(random(asyns.length))];
+	        var newStr = toAdverb(adj);
+	        if (dbug) console.log("Adverbify: '" + adj + "' -> " + newStr);
 
-					wordnet.exists(newStr, function(yes) {
+	        wordnet.exists(newStr, function(yes) {
 
-						if (yes) {
-							if (dbug) console.log("replaceAdv(): '"+toChange+"' -> "+newStr);
-							fireReplaceEvent(replaceIdx, newStr);
-						}
-						else {
-							console.log("wn.reject: "+newStr);
-						}
-					});
-				}
-			});
-		}
+	          if (yes) {
+	            if (dbug) console.log("replaceAdv(): '" + toChange + "' -> " + newStr);
+	            fireReplaceEvent(replaceIdx, newStr);
+	          } else {
+	            console.log("wn.reject: " + newStr);
+	          }
+	        });
+	      }
+	    });
+	  }
 	});
 }
 
@@ -178,11 +175,14 @@ function replaceNoun(toChange, replaceIdx) {
 
 					var orig = newStr; // tmp-remove
 					newStr = RiTa.pluralize(newStr);
+
 					if (dbug) console.log("Pluralizing: '" + orig + "' -> " + newStr + " [orig=" + words[replaceIdx]+"]");
 
-					wordnet.exists(newStr, function(yes) { // Does this happen?
+					wordnet.exists(newStr, function(ok) {
 
-						if (!yes) {
+						if (!ok) {
+
+              // Reject plural not found in WordNet
 							console.log("WN-plural-rejection***: '" + newStr);
 							return;
 						}
@@ -191,10 +191,10 @@ function replaceNoun(toChange, replaceIdx) {
 
 						fireReplaceEvent(replaceIdx, newStr);
 					});
-				}        var args = { tense: RiTa.PRESENT_TENSE, number: RiTa.SINGULAR, person: RiTa.THIRD_PERSON };
-
+				}
 			}
 			else {
+
 				if (dbug) console.log("Ignoring -ing noun! -> " + newStr);
 			}
 		}
@@ -274,7 +274,7 @@ function remember(toChange, idx) {
 		idx++; // update counter if a word is not returned
 	}
 
-    return idx;
+  return idx;
 }
 
 function onReplaceEvent(re) {
@@ -318,12 +318,13 @@ function adjustDeterminer(newWord, idx) {
 
   if (idx < 1) return;
 
-  var firstLetter = newWord.charAt(0);
+  var first = newWord.charAt(0);
 
-  if (equalsIgnoreCase(words[idx - 1], "a") && /[aeiou]/.test(firstLetter)) {
+  if (equalsIgnoreCase(words[idx - 1], "a") && /[aeiou]/.test(first)) {
 
     words[idx - 1] = checkCase(idx - 1, "an");
-  } else if (equalsIgnoreCase(words[idx - 1], "an") && /[^aeiou]/.test(firstLetter)) {
+  }
+  else if (equalsIgnoreCase(words[idx - 1], "an") && /[^aeiou]/.test(first)) {
 
     words[idx - 1] = checkCase(idx - 1, "a");
   }
@@ -342,11 +343,30 @@ function fireReplaceEvent(replaceIdx, newWord) {
 }
 
 function toAdverb(nStr) {
-
 	if (endsWith(nStr, "y"))
 		return nStr.substring(0, nStr.length - 1) + "ily";
 
 	return nStr + (endsWith(nStr, "ic") ? "ally" : "ly");
+}
+
+function isCommon(word) {
+  var test = word.replace(/\.$/, '');
+  for (var i = 0; i < commons.length; i++) {
+    if (commons[i] === test)
+      return true;
+  }
+  return false;
+}
+
+function countLines() {
+  var lastY = rts[0].get('y'), count = 1, thisY;
+  for (var i = 1; i < rts.length; i++) {
+    thisY = rts[i].get('y');
+    if (thisY !== lastY)
+      count++;
+    lastY = thisY;
+  }
+  return count;
 }
 
 function changeTextColor(num, t) {
