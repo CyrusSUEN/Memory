@@ -1,16 +1,12 @@
-var host = "lab-lamp.scm.cityu.edu.hk",
-  port = 8094, CLKTEST = 0, wordnet,
-	wordLists = [], colorVals = [],
-  dbug = 0, timeStamp = 0, bgTimeStamp = 0,
-  mode = CLKTEST, stepMs = 1000, bgColor = 0,
-  fontColor = 255.0, bgCycleUp = true, font;
-
-var rts, canvasWidth = 1100, canvasHeight = 800, fontSize = 48;
+var host = "lab-lamp.scm.cityu.edu.hk", port = 8094, wordnet, dbug = 0,
+	wordLists = [], colorVals = [], timeStamp = 0, bgTimeStamp = 0,
+  mode = 0, stepMs = 1000, bgColor = 0, bgCycleUp = true, rts,
+  font, fontColor = 255, fontSize = 48;
 
 var words = ['A', 'raw', 'memory', '.', 'Church', '.', 'A', 'loud', 'room', 'with', 'children', 'playing', ',', 'thoughtlessly', '.', 'Wandering', 'wildly', '.', 'I', 'stand', 'small', 'and', 'young', 'within', 'a', 'chaotic', 'garden', 'of', 'little', 'ideas', 'and', 'unaware', ',', 'tiny', 'minds', '.', 'Colorful', 'toys', 'litter', 'the', 'ground', 'and', 'posters', 'of', 'silent', 'saints', 'loom', '.', 'My', 'mother', 'rises', 'tall', 'and', 'aware', '.', 'She', 'departs', 'gracefully', '.', 'I', 'pull', 'a', 'blue', ',', 'plastic', 'bucket', 'to', 'the', 'door', 'and', 'climb', 'it', '.', 'Staring', 'through', 'the', 'window', '.', 'Bells', 'ringing', '.', 'My', 'mom', 'is', 'walking', 'down', 'a', 'long', 'hall', ',', 'bright', 'with', 'holy', 'light', '.', 'I', 'am', 'trembling', ',', 'abiding', 'while', 'the', 'adults', 'pray', '.', 'I', 'play', ',', 'barely', ',', 'with', 'a', 'little', 'red', 'ambulance', ',', 'watching', 'the', 'empty', 'corridor', '.'];
 var allpos = ['-', 'a', 'nn', '-', 'nn', '-', '-', 'a', 'nn', '-', 'nns', 'vbg', '-', 'r', '-', 'vbg', 'r', '-', '-', 'vb', 'a', '-', 'a', '-', '-', 'a', 'nn', '-', 'a', 'nns', '-', 'a', '-', 'a', 'nns', '-', 'a', 'nns', 'vb', '-', 'nn', '-', 'nns', '-', 'a', 'nns', 'vb', '-', '-', 'nn', 'vbz', 'a', '-', 'a', '-', '-', 'vbz', 'r', '-', '-', 'vb', '-', 'a', '-', 'a', 'nn', '-', '-', 'nn', '-', 'vb', '-', '-', 'vbg', '-', '-', 'nn', '-', 'nns', 'vbg', '-', '-', 'nn', '-', 'vbg', '-', '-', 'a', 'nn', '-', 'a', '-', 'a', 'nn', '-', '-', 'vb', 'vbg', '-', 'vbg', '-', '-', 'nns', 'vb', '-', '-', 'vb', '-', 'r', '-', '-', '-', 'a', 'a', 'nn', '-', 'vbg', '-', 'a', 'nn', '-'];
 var commons = ['.', ',', 'one', 'I', 'play', 'pull', 'all', 'a', 'an', 'and', 'is', 'it', 'about', 'above', 'across', 'after', 'against', 'around', 'at', 'before', 'behind', 'below', 'beneath', 'beside', 'besides', 'between', 'beyond', 'but', 'by', 'each', 'down', 'during', 'except', 'for', 'from', 'in', 'inside', 'into', 'there', 'like', 'my', 'near', 'of', 'off', 'on', 'out', 'outside', 'over', 'since', 'the', 'through', 'throughout', 'till', 'to', 'toward', 'under', 'until', 'wait', 'stand', 'plus', 'up', 'upon', 'with', 'without', 'according', 'because', 'way', 'addition', 'front', 'regard', 'instead', 'account'];
-var ignores = 'womb-to-tomb|hearable|lav|bimester|quadripara|quintipara|lebensraum|ells|chutzpanik|free-lances|puerpera|inspissate|pyrolatries|inexperient|primipara|nonesuches|jimhickeys|brainpowers|cacodaemons|fakirs|kalifahs|nonsuches|macadamizing';
+var ignores = '|womb-to-tomb|hearable|lav|bimester|quadripara|quintipara|lebensraum|ells|chutzpanik|free-lances|puerpera|inspissate|pyrolatries|inexperient|primipara|nonesuches|jimhickeys|brainpowers|cacodaemons|fakirs|kalifahs|nonsuches|macadamize|squatty|web|professionalise|vascularize|meagerly|breathalysers|';
 
 function preload() {
 
@@ -19,15 +15,15 @@ function preload() {
 
 function setup() {
 
-  createCanvas(canvasWidth, canvasHeight).parent("p5jsContainer");
-
-  textFont(font, 48);
+  createCanvas(1100, 800).parent("p5jsContainer");
+  textFont(font, fontSize);
 
   wordnet = new RiWordNet(host, port);
+
   for (var i = 0; i < words.length; i++) {
 
-    wordLists[i] = [words[i]];
-    colorVals[i] = 255.0;
+    wordLists[i] = [ words[i] ];
+    colorVals[i] = 255;
   }
 
   reformat();
@@ -35,25 +31,17 @@ function setup() {
 
 function draw() {
 
-  if (CLKTEST && mode == 0) return;
-
   if (millis() - bgTimeStamp > 100) {
 
     bgColor += bgCycleUp ? .42 : -.42;
     bgCycleUp = (bgColor > 254) ? false : (bgColor < 1) ? true : bgCycleUp;
-    fontColor = fontColor - 1.0;
+    fontColor = fontColor - 1;
     bgTimeStamp = millis();
   }
 
   tryReplacement();
+
   background(bgColor);
-  drawText();
-}
-
-function drawText() {
-
-	noStroke();
-
 	for (var i = 0; i < rts.length; i++) {
 		fill(colorVals[i]);
 		text(rts[i].text(), rts[i].get('x'), rts[i].get('y'));
@@ -62,90 +50,73 @@ function drawText() {
 
 function reformat() {
 
-  rts = {};
-
   var theText = RiTa.untokenize(words);
 
   rts = RiString.createWords({
 	  font: font, fontSize: fontSize, text: theText,
-	  x: 30, y: 60, w: canvasWidth - 50, h: canvasHeight - 100,
+	  x: 30, y: 40, w: width - 50, h: height - 60,
   });
 
   timeStamp = millis();
 }
 
-function mouseReleased() {
-
-  if (CLKTEST) {
-
-    mode = CLKTEST;
-    timeStamp = -stepMs;
-  }
-}
-
 function isCommon(word) {
 
-    var test = word.replace(/\.$/, '');
-    for (var i = 0; i < commons.length; i++) {
-      if (commons[i] === test)
-        return true;
-    }
-    return false;
+  var test = word.replace(/\.$/, '');
+  for (var i = 0; i < commons.length; i++) {
+    if (commons[i] === test)
+      return true;
+  }
+  return false;
 }
 
 function tryReplacement() {
 
-	if (millis() - timeStamp > stepMs) {// only change if stepMs has elapsed
+  if (millis() - timeStamp > stepMs) { // only change if stepMs has elapsed
 
-		// count is set to random so loop begins randomly in paragraph
-		var replaceIdx = Math.floor(random(1, words.length));
-		var toChange = words[replaceIdx];
+    // count is set to random so loop begins randomly in paragraph
+    var replaceIdx = Math.floor(random(1, words.length)),
+      max, toChange = words[replaceIdx];
 
-		if (toChange.length < 2 || isCommon(toChange))
-			return;
+    if (toChange.length < 2 || isCommon(toChange))
+      return;
 
-		// once two minutes pass, 120000ms, then the text goes into
-		// "remembering" state where it is more likely to remember a
-		// replacement that it has already made then to make a new replacement
+    // once two minutes pass, 120000ms, then the text goes into
+    // "remembering" state where it is more likely to remember a
+    // replacement that it has already made than to make a new replacement
 
-		if (!CLKTEST) {
+    max = (millis() - timeStamp > 120000) ? 10 : 5;
+    mode = Math.floor(random(1, max));
 
- 			var now = millis(), max = (now-timeStamp > 120000) ? 10 : 5;
-  			mode  = Math.floor(random(1, max));
-  		}
+    timeStamp = millis();
 
-		timeStamp = millis();
-		//console.log("TRY: " + millis() +" NEXT: "+(timeStamp+stepMs));
-
-  		//busy = 1;
-
-		// switch statement which either changes verbs, nouns,
-		// adverbs, or adjectives; or remembers an older word
-		switch (mode) {
-			case 1:
-				if (allpos[replaceIdx].indexOf("a") == 0)
-					replaceAdj(toChange, replaceIdx);
-				break;
-			case 2:
-				if (allpos[replaceIdx].indexOf("n") == 0)
-					replaceNoun(toChange, replaceIdx);
-				break;
-			case 3:
-				if (allpos[replaceIdx].indexOf("r") == 0)
-					replaceAdv(toChange, replaceIdx);
-				break;
-			case 4:
-				if (allpos[replaceIdx].indexOf("v") == 0)
-					replaceVerb(toChange, replaceIdx);
-				break;
-			case 9:
-				replaceIdx = remember(toChange, replaceIdx);
-				break;
-		}
-	}
+    // switch statement which either changes verbs, nouns,
+    // adverbs, or adjectives; or remembers an older word
+    switch (mode) {
+      case 1:
+        if (allpos[replaceIdx].indexOf("a") == 0)
+          replaceAdj(toChange, replaceIdx);
+        break;
+      case 2:
+        if (allpos[replaceIdx].indexOf("n") == 0)
+          replaceNoun(toChange, replaceIdx);
+        break;
+      case 3:
+        if (allpos[replaceIdx].indexOf("r") == 0)
+          replaceAdv(toChange, replaceIdx);
+        break;
+      case 4:
+        if (allpos[replaceIdx].indexOf("v") == 0)
+          replaceVerb(toChange, replaceIdx);
+        break;
+      case 9:
+        replaceIdx = remember(toChange, replaceIdx);
+        break;
+    }
+  }
 }
 
-  // here are the methods for retrieving words from wordNet and making
+  // here are the (4) methods for retrieving words from WordNet and making
   // appropriate changes to their structure if needed.
 
 function replaceAdj(toChange, replaceIdx) {
@@ -232,18 +203,13 @@ function replaceNoun(toChange, replaceIdx) {
 
 function replaceVerb(toChange, replaceIdx) {
 
-    if (replaceIdx < 2) return;
+  if (replaceIdx < 2) return;
 
-    if (equalsIgnoreCase(toChange, "am")) {
+  if (equalsIgnoreCase(toChange, "am"))
+    return fireReplaceEvent(replaceIdx, "was");
 
-        fireReplaceEvent(replaceIdx, "was");
-        return;
-    }
-    else if (equalsIgnoreCase(toChange,"was")) {
-
-        fireReplaceEvent(replaceIdx, "am");
-        return;
-    }
+  if (equalsIgnoreCase(toChange,"was"))
+    return fireReplaceEvent(replaceIdx, "am");
 
 	wordnet.getAllCoordinates(toChange, "v", function(vsyns) {
 
@@ -251,7 +217,6 @@ function replaceVerb(toChange, replaceIdx) {
 
 			var newStr = vsyns[Math.floor(random(vsyns.length))];
 			var orig = newStr;
-			// tmp-remove
 
 			if (allpos[replaceIdx] === "vbg") {
 
@@ -260,13 +225,16 @@ function replaceVerb(toChange, replaceIdx) {
 			}
 			else if (allpos[replaceIdx] === "vbz") {
 
-		        var args = { tense: RiTa.PRESENT_TENSE, number: RiTa.SINGULAR, person: RiTa.THIRD_PERSON };
+				newStr = RiTa.conjugate(newStr, {
+          tense: RiTa.PRESENT_TENSE,
+          number: RiTa.SINGULAR,
+          person: RiTa.THIRD_PERSON
+        });
 
-				newStr = RiTa.conjugate(newStr, args);
 				if (dbug) console.log("Conjugate(3rd)***: " + orig + " -> " + newStr);
 			}
 
-			if (dbug) console.log("replaceVerb(): '" + toChange + "' -> " + newStr);
+			if (dbug) console.log("replaceVerb(): '" + toChange + "' -> " + orig + '/'+newStr);
 
 			fireReplaceEvent(replaceIdx, newStr);
 		}
@@ -302,6 +270,7 @@ function remember(toChange, idx) {
 				break;
 			}
 		}
+
 		idx++; // update counter if a word is not returned
 	}
 
@@ -311,72 +280,65 @@ function remember(toChange, idx) {
 function onReplaceEvent(re) {
 
 	var sub = re.data();
-	var newWord = sub.word;
-
-	if (newWord != null) {
-
-		//timeStamp = millis();
-		if (CLKTEST) mode = 0;
-		makeSubstitution(newWord, sub.idx);
-	}
+  sub.word && makeSubstitution(sub.word, sub.idx);
 }
 
 function makeSubstitution(newWord, idx) {
 
-	var all = rts;
+	var rs, all = rts;
 
 	for (var t = 0; t < all.length; t++) {
 
-		var riString = all[t].text();
-		if (equalsIgnoreCase(riString, words[idx]) ||
-			 equalsIgnoreCase(riString, words[idx] + ".") ||
-			  equalsIgnoreCase(riString, words[idx] + ","))
-		{
-			//  change the color of text if needed
-			changeTextColor(mode, t);
-		}
+	  rs = all[t].text();
+
+	  if (equalsIgnoreCase(rs, words[idx]) ||
+	    equalsIgnoreCase(rs, words[idx] + ".") ||
+	    equalsIgnoreCase(rs, words[idx] + ","))
+    {
+	    //  change the color of text if needed
+	    changeTextColor(mode, t);
+	  }
 	}
 
-    adjustDeterminer(newWord, idx); // may change words[idx-1]
+	adjustDeterminer(newWord, idx); // may change words[idx-1]
 
-  	console.log(words[idx] + "-> "+newWord+ " @"+millis());
+	console.log(words[idx] + "-> " + newWord + " @" + parseInt(millis()));
 
-    // here is where the replacement is actually made
-    words[idx] = newWord;
+	// here is where the replacement is actually made
+	words[idx] = newWord;
 
-    // following 5 lines needed to add the new word to the
-    // arrays of words that keep track of the history of replacements
-    var tempArray = wordLists[Math.min(idx, wordLists.length-1)];
-    if (mode <= 4) tempArray.push(newWord);
+	// add new word to the history of replacements
+	if (mode <= 4)
+    wordLists[Math.min(idx, wordLists.length - 1)].push(newWord);
 
-
-    reformat(); // reformat the screen
+	reformat(); // reformat the screen
 }
 
 function adjustDeterminer(newWord, idx) {
 
-  	//console.log("adjustDeterminer: "+newWord);
+  if (idx < 1) return;
 
-    if (idx < 1) return;
+  var firstLetter = newWord.charAt(0);
 
-    var firstLetter = newWord.charAt(0);
+  if (equalsIgnoreCase(words[idx - 1], "a") && /[aeiou]/.test(firstLetter)) {
 
-    if (equalsIgnoreCase(words[idx-1], "a") && /[aeiou]/.test(firstLetter)) {
+    words[idx - 1] = checkCase(idx - 1, "an");
+  } else if (equalsIgnoreCase(words[idx - 1], "an") && /[^aeiou]/.test(firstLetter)) {
 
-      	words[idx-1] = checkCase(idx-1, "an");
-    }
-    else if (equalsIgnoreCase(words[idx-1], "an") && /[^aeiou]/.test(firstLetter)) {
-
-      	words[idx-1] = checkCase(idx-1,"a");
-    }
+    words[idx - 1] = checkCase(idx - 1, "a");
+  }
 }
 
 function fireReplaceEvent(replaceIdx, newWord) {
 
-    if (ignores.indexOf(newWord)>-1) return;
+  if (ignores.indexOf('|'+newWord+'|') > -1) {
 
-    onReplaceEvent(new RiTaEvent(wordnet, null,
-        new Sub(checkCase(replaceIdx, newWord), replaceIdx)));
+    if (dbug) console.log('Ignoring: '+newWord);
+    return;
+  }
+
+  onReplaceEvent(new RiTaEvent(wordnet, null,
+      new Sub(checkCase(replaceIdx, newWord), replaceIdx)));
 }
 
 function toAdverb(nStr) {
@@ -387,40 +349,34 @@ function toAdverb(nStr) {
 	return nStr + (endsWith(nStr, "ic") ? "ally" : "ly");
 }
 
+function changeTextColor(num, t) {
+	colorVals[t] = (num <= 4) ? Math.max(0, colorVals[t] - 50) :
+	  Math.min(255, colorVals[t] + 50);
+}
+
 function Sub(s, index) {
 
-		this.word = s;
-		this.idx = index;
-};
+	this.word = s;
+	this.idx = index;
+}
 
-////////////////////////////////////////////////////////////////////////
-
-function isPlural(s) { return (!s.equals(RiTa.stem(s))); }
+function isPlural(s) {
+  return (!s.equals(RiTa.stem(s)));
+}
 
 function endsWith(str, ending) {
-
 	return str.slice(-ending.length) == ending;
 }
 
-function checkCase(idx, word)
-{
+function checkCase(idx, word) {
 	var first = words[idx].charAt(0);
     if (idx < 1 || first == first.toUpperCase()) {
-
         word = RiTa.upperCaseFirst(word);
         if (dbug) console.log("Capitalizing: "+word+" [orig="+words[idx]+"]");
     }
-
     return word;
 }
 
-function changeTextColor(num, t) {
-
-		colorVals[t] = (num <= 4) ? Math.max(0, colorVals[t] - 50) :
-		  Math.min(255, colorVals[t] + 50);
-}
-
 function equalsIgnoreCase(a,b) {
-
 	return a && b && (a.toUpperCase() === b.toUpperCase());
 }
