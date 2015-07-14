@@ -8,54 +8,6 @@ var allpos = ['-', 'a', 'nn', '-', 'nn', '-', '-', 'a', 'nn', '-', 'nns', 'vbg',
 var commons = ['.', ',', 'one', 'I', 'play', 'pull', 'all', 'a', 'an', 'and', 'is', 'it', 'about', 'above', 'across', 'after', 'against', 'around', 'at', 'before', 'behind', 'below', 'beneath', 'beside', 'besides', 'between', 'beyond', 'but', 'by', 'each', 'down', 'during', 'except', 'for', 'from', 'in', 'inside', 'into', 'there', 'like', 'my', 'near', 'of', 'off', 'on', 'out', 'outside', 'over', 'since', 'the', 'through', 'throughout', 'till', 'to', 'toward', 'under', 'until', 'wait', 'stand', 'plus', 'up', 'upon', 'with', 'without', 'according', 'because', 'way', 'addition', 'front', 'regard', 'instead', 'account'];
 var ignores = '|womb-to-tomb|hearable|lav|bimester|quadripara|quintipara|lebensraum|ells|chutzpanik|free-lances|puerpera|inspissate|pyrolatries|inexperient|primipara|nonesuches|jimhickeys|brainpowers|cacodaemons|fakirs|kalifahs|nonsuches|macadamize|squatty|web|professionalise|vascularize|meagerly|breathalysers|higgledy-piggledy|';
 
-function preload() {
-
-  font = loadFont('LondonBetween.ttf');
-}
-
-function setup() {
-
-  createCanvas(1100, 900);
-  textFont(font, fontSize);
-  noStroke();
-
-  wordnet = new RiWordNet(host, port);
-
-  for (var i = 0; i < words.length; i++) {
-
-    wordLists[i] = [ words[i] ];
-    colorVals[i] = 255;
-  }
-
-  reformat();
-}
-
-function draw() {
-
-  if (millis() - bgTimeStamp > 100) {
-
-    bgColor += bgCycleUp ? .42 : -.42;
-    bgCycleUp = (bgColor > 254) ? false : (bgColor < 1) ? true : bgCycleUp;
-    fontColor = fontColor - 1;
-    bgTimeStamp = millis();
-  }
-
-  tryReplacement();
-  drawText();
-}
-
-function drawText() {
-
-  background(255);
-  fill(bgColor); // draw bg based on # of lines
-  rect(0,0,width, lines * leading + textY * 2);
-
-  for (var i = 0; i < rts.length; i++) {
-    fill(colorVals[i]);
-    text(rts[i].text(), rts[i].get('x'), rts[i].get('y'));
-  }
-}
-
 function reformat() {
 
   var theText = RiTa.untokenize(words);

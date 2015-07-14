@@ -9,6 +9,55 @@
     <script src="lib/ristring-util.js"></script>
     <script src="lib/rita-wordnet.js"></script>
     <script src="memory.js"></script>
+    <script>
+    function preload() {
+
+      font = loadFont('LondonBetween.ttf');
+    }
+
+    function setup() {
+
+      createCanvas(1100, 900);
+      textFont(font, fontSize);
+      noStroke();
+
+      wordnet = new RiWordNet(host, port);
+
+      for (var i = 0; i < words.length; i++) {
+
+        wordLists[i] = [ words[i] ];
+        colorVals[i] = 255;
+      }
+
+      reformat();
+    }
+
+    function draw() {
+
+      if (millis() - bgTimeStamp > 100) {
+
+        bgColor += bgCycleUp ? .42 : -.42;
+        bgCycleUp = (bgColor > 254) ? false : (bgColor < 1) ? true : bgCycleUp;
+        fontColor = fontColor - 1;
+        bgTimeStamp = millis();
+      }
+
+      tryReplacement();
+      drawText();
+    }
+
+    function drawText() {
+
+      background(255);
+      fill(bgColor); // draw bg based on # of lines
+      rect(0,0,width, lines * leading + textY * 2);
+
+      for (var i = 0; i < rts.length; i++) {
+        fill(colorVals[i]);
+        text(rts[i].text(), rts[i].get('x'), rts[i].get('y'));
+      }
+    }
+    </script>
 </head>
 
 <body>
