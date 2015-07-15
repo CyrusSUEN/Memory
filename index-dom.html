@@ -1,0 +1,173 @@
+<html>
+
+<head>
+    <title>Memory (dom)</title>
+    
+    <script src="lib/jquery-min.js"></script>
+    <script src="lib/rita.js"></script>
+    <script src="lib/ristring-util.js"></script>
+    <script src="lib/rita-wordnet.js"></script>
+    <script src="memory.js"></script>
+    
+    <style>
+        
+        @font-face {
+            font-family: font;
+            src: url('LondonBetween.ttf');
+            font-size: 48px;
+        }
+        
+        div {
+            font-family: font;
+            padding: 30px;
+            line-height: 60px;
+        }
+    </style>
+    
+    <script>
+    var $canvas;
+    
+    // requestAnim shim layer by Paul Irish
+    window.requestAnimFrame = (function () {
+    	return window.requestAnimationFrame ||
+    		window.webkitRequestAnimationFrame ||
+    		window.mozRequestAnimationFrame ||
+    		window.oRequestAnimationFrame ||
+    		window.msRequestAnimationFrame ||
+    		function (/* function */ callback, /* DOMElement */ element) {
+    			window.setTimeout(callback, 1000 / 60);
+    		};
+    })();
+    
+    // window.performance, millis() and random() extracted from p5js
+    window.performance = window.performance || {};
+    window.performance.now = function () {
+        var load_date = Date.now();
+        return window.performance.now || 
+        window.performance.mozNow || 
+        window.performance.msNow || 
+        window.performance.oNow || 
+        window.performance.webkitNow || 
+        function () {
+    		return Date.now() - load_date;
+        };
+    } ();
+    
+    function millis() {
+    	
+    	return window.performance.now();
+    }
+    
+    function random(min, max) {
+    
+      var rand;
+    
+      rand = Math.random();
+    
+      if (arguments.length === 0) {
+        return rand;
+      } else
+      if (arguments.length === 1) {
+        return rand * min;
+      } else {
+        if (min > max) {
+          var tmp = min;
+          min = max;
+          max = tmp;
+        }
+    
+        return rand * (max-min) + min;
+      }
+    }
+    
+    function convertedColor(color) {
+    	
+    	var intValue = Math.floor( color );
+    	
+    	return "rgb(" + intValue + "," + intValue + "," + intValue + ")";
+    }
+    
+    $(document).ready(function () {
+    
+    	$canvas = $("#container");
+    	setup();
+    });
+    
+    function setup() {
+    
+    	$canvas.width(1100).height(800);
+    
+    	wordnet = new RiWordNet(host, port);
+    	for (var i = 0; i < words.length; i++) {
+    
+    		wordLists[i] = [words[i]];
+    		colorVals[i] = 255.0;
+    	}
+    
+    	reformat();
+    
+    	draw();
+    }
+    
+    function draw() {
+    	
+    	requestAnimationFrame(draw);
+    
+    	if (millis() - bgTimeStamp > 100) {
+    
+    		bgColor += bgCycleUp ? .42 : -.42;
+    		bgCycleUp = (bgColor > 254) ? false : (bgColor < 1) ? true : bgCycleUp;
+    		fontColor = fontColor - 1.0;
+    		bgTimeStamp = millis();
+    	}
+    
+    	tryReplacement();
+    	
+    	$canvas.css("background-color", convertedColor(bgColor));
+    	
+    	drawText();
+    }
+    
+    function drawText() {
+    	
+    	$canvas.empty();
+    
+    	for (var i = 0; i < rts.length; i++) {
+    		createTextNode(i);
+    	}
+    	
+    	function createTextNode(i) {
+    		$('<span/>', {
+    			
+    			html: rts[i].text() + '&nbsp;',
+    			css: { 
+    				color: convertedColor(colorVals[i]),
+    				display: "inline-block",
+    				fontSize: fontSize
+    				}
+    		}).appendTo($canvas);
+    	}
+    }
+    
+    function reformat() {
+    
+    	rts = [];
+    
+    	var theText = RiTa.untokenize(words).split(' ');
+    	
+    	for (var i = 0; i < theText.length; i++)
+    		rts.push( new RiString( theText[i] ) );
+    
+    	timeStamp = millis();
+    }
+    </script>
+        
+</head>
+
+<body>
+    <audio src="bells3.mp3" loop autoplay></audio>
+    <p><font size=2>Memory by A. B. Soderman</font></p>
+    <div id='container'></div>
+</body>
+
+</html>

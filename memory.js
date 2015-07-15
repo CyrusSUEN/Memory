@@ -8,19 +8,6 @@ var allpos = ['-', 'a', 'nn', '-', 'nn', '-', '-', 'a', 'nn', '-', 'nns', 'vbg',
 var commons = ['.', ',', 'one', 'I', 'play', 'pull', 'all', 'a', 'an', 'and', 'is', 'it', 'about', 'above', 'across', 'after', 'against', 'around', 'at', 'before', 'behind', 'below', 'beneath', 'beside', 'besides', 'between', 'beyond', 'but', 'by', 'each', 'down', 'during', 'except', 'for', 'from', 'in', 'inside', 'into', 'there', 'like', 'my', 'near', 'of', 'off', 'on', 'out', 'outside', 'over', 'since', 'the', 'through', 'throughout', 'till', 'to', 'toward', 'under', 'until', 'wait', 'stand', 'plus', 'up', 'upon', 'with', 'without', 'according', 'because', 'way', 'addition', 'front', 'regard', 'instead', 'account'];
 var ignores = '|womb-to-tomb|hearable|lav|bimester|quadripara|quintipara|lebensraum|ells|chutzpanik|free-lances|puerpera|inspissate|pyrolatries|inexperient|primipara|nonesuches|jimhickeys|brainpowers|cacodaemons|fakirs|kalifahs|nonsuches|macadamize|squatty|web|professionalise|vascularize|meagerly|breathalysers|higgledy-piggledy|';
 
-function reformat() {
-
-  var theText = RiTa.untokenize(words);
-
-  rts = RiString.createWords({
-	  font: font, fontSize: fontSize, leading: leading, text: theText,
-	  x: textX, y: textY, w: width - 50, h: height - 30,
-  });
-
-  lines = countLines();
-  timeStamp = millis();
-}
-
 function tryReplacement() {
 
   if (millis() - timeStamp > stepMs) { // only change if stepMs has elapsed
