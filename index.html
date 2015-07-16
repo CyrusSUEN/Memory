@@ -36,14 +36,10 @@
 
       if (millis() - bgTimeStamp > 100) {
 
-        bgColor += bgCycleUp ? .42 : -.42;
-        bgCycleUp = (bgColor > 254) ? false : (bgColor < 1) ? true : bgCycleUp;
-        fontColor = fontColor - 1;
-        bgTimeStamp = millis();
+        adjustBackground();
+        tryReplacement();
+        drawText();
       }
-
-      tryReplacement();
-      drawText();
     }
 
     function drawText() {
@@ -59,14 +55,14 @@
     }
 
     function reformat() {
-    
+
       var theText = RiTa.untokenize(words);
-    
+
       rts = RiString.createWords({
     	  font: font, fontSize: fontSize, leading: leading, text: theText,
     	  x: textX, y: textY, w: width - 50, h: height - 30,
       });
-    
+
       lines = countLines();
       timeStamp = millis();
     }
