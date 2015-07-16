@@ -24,12 +24,15 @@
     </style>
 
 <script>
-var $container;
+var $container, Container;
 
 $(document).ready(function()
 {
     $container = $("#container");
-    $container.width(1100).height(900);
+    
+    Container = document.getElementById("container");
+    Container.style.width = "1100px";
+    Container.style.minHeight = "600px"; // use min-height that it extents when overflow
 
     wordnet = new RiWordNet(host, port);
     for (var i = 0; i < words.length; i++)
