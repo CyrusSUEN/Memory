@@ -29,7 +29,7 @@ var $container;
 $(document).ready(function()
 {
     $container = $("#container");
-    $container.width(1100).height(800);
+    $container.width(1100).height(900);
 
     wordnet = new RiWordNet(host, port);
     for (var i = 0; i < words.length; i++)
@@ -122,8 +122,7 @@ function random(min, max)
     else if (arguments.length === 1)
         return rand * min;
     else {
-        if (min > max)
-        {
+        if (min > max) {
             var tmp = min;
             min = max;
             max = tmp;
