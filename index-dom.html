@@ -21,7 +21,7 @@
             padding: 30px;
             line-height: 60px;
             width: 1100px;
-            min-height: 600px;
+            minHeight: 600px;
         }
     </style>
 
@@ -30,8 +30,6 @@ var $container;
 
 $(document).ready(function()
 {
-    $container = $("#container");
-    
     wordnet = new RiWordNet(host, port);
     for (var i = 0; i < words.length; i++)
     {
@@ -57,8 +55,8 @@ function draw()
 
 function drawText()
 {
-    $container.empty();
-    $container.css("background-color", toHex(bgColor));
+    $container = $("#container");
+    $container.empty().css("background-color", toHex(bgColor));
 
     for (var i = 0; i < rts.length; i++) {
         createTextNode(i);
