@@ -15,28 +15,26 @@
             src: url('LondonBetween.ttf');
             font-size: 48px;
         }
-
         div {
-            font-family: font;
             padding: 30px;
-            line-height: 60px;
-            width: 1100px;
+            font-family: font;
+            line-height: 58px;
             minHeight: 600px;
+            width: 1100px;
         }
     </style>
 
 <script>
-var $container;
+
+var rts = [];
 
 $(document).ready(function()
 {
     wordnet = new RiWordNet(host, port);
-    for (var i = 0; i < words.length; i++)
-    {
+    for (var i = 0; i < words.length; i++) {
         wordLists[i] = [words[i]];
         colorVals[i] = 255.0;
     }
-
     reformat();
     draw();
 });
@@ -47,55 +45,46 @@ function draw()
 
     if (millis() - bgTimeStamp > 100)
     {
-        adjustBackground();
+        $('#container').css('background-color',
+            toHex(adjustBackground()));
         tryReplacement();
-        drawText();
-    }
-}
-
-function drawText()
-{
-    $container = $("#container");
-    $container.empty().css("background-color", toHex(bgColor));
-
-    for (var i = 0; i < rts.length; i++) {
-        createTextNode(i);
-    }
-
-    function createTextNode(i)
-    {
-        $('<span/>',
-        {
-            html: rts[i].text() + '&nbsp;',
-            css: {
-                color: toHex(colorVals[i]),
-                display: "inline-block",
-                fontSize: fontSize
-            }
-        }).appendTo($container);
     }
 }
 
 function reformat()
 {
-    rts = [];
+    var $container = $("#container");
     var theText = RiTa.untokenize(words).split(' ');
-    for (var i = 0; i < theText.length; i++)
-        rts.push(new RiString(theText[i]));
+    for (var i = 0; i < theText.length; i++) {
+        if (!rts[i]) rts[i] = new RiString();
+        rts[i].text(theText[i]);
+        updateNode(i, $container);
+    }
     timeStamp = millis();
 }
 
-// requestAnim shim layer by Paul Irish
-window.requestAnimFrame = (function() {
-    return window.requestAnimationFrame ||
-        window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame ||
-        window.oRequestAnimationFrame ||
-        window.msRequestAnimationFrame ||
-        function( /* function */ callback, /* DOMElement */ element) {
-            window.setTimeout(callback, 1000 / 60);
-        };
-})();
+function updateNode(i, div)
+{
+    var $span = $('span#'+i);
+    if (!$span.length) $span = createTextNode(i, div);
+    $span.css('color', toHex(colorVals[i]))
+        .html(rts[i].text() + '&nbsp;');
+}
+
+function createTextNode(i, div)
+{
+    var $span = $('<span/>', {
+        id: i,
+        html: rts[i].text() + '&nbsp;',
+        css: {
+            color: toHex(colorVals[i]),
+            display: "inline-block",
+            fontSize: fontSize
+        }
+    }).appendTo(div);
+
+    return $span;
+}
 
 function millis()
 {
@@ -135,6 +124,18 @@ function toHex(color)
     var intValue = Math.floor(color);
     return "rgb(" + intValue + "," + intValue + "," + intValue + ")";
 }
+
+// requestAnim shim layer by Paul Irish
+window.requestAnimFrame = (function() {
+    return window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        function( /* function */ callback, /* DOMElement */ element) {
+            window.setTimeout(callback, 1000 / 60);
+        };
+})();
 
 </script>
 </head>
