@@ -66,12 +66,12 @@ function reformat()
 function updateNode(i, div)
 {
     var $span = $('span#'+i);
-    if (!$span.length) $span = createTextNode(i, div);
+    if (!$span.length) $span = createNode(i, div);
     $span.css('color', toHex(colorVals[i]))
         .html(rts[i].text() + '&nbsp;');
 }
 
-function createTextNode(i, div)
+function createNode(i, div)
 {
     var $span = $('<span/>', {
         id: i,
