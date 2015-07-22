@@ -13,11 +13,10 @@ function tryReplacement() {
   if (millis() - timeStamp > stepMs) { // only change if stepMs has elapsed
 
     // count is set to random so loop begins randomly in paragraph
-    var replaceIdx = Math.floor(random(1, words.length)),
+    var replaceIdx = Math.floor(RiTa.random(1, words.length)),
       max, toChange = words[replaceIdx];
 
-    if (toChange.length < 2 || isCommon(toChange))
-      return;
+    if (toChange.length < 2 || isCommon(toChange)) return;
 
     // once two minutes pass, 120000ms, then the text goes into
     // "remembering" state where it is more likely to remember a

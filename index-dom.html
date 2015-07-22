@@ -88,7 +88,7 @@ function createNode(i, div)
 
 function millis()
 {
-    // window.performance, millis() and random() extracted from p5js
+    // window.performance, amd millis() extracted from p5js
     window.performance = window.performance || {};
     window.performance.now = window.performance.now || function() {
         var load_date = Date.now();
@@ -100,23 +100,6 @@ function millis()
             function() { return Date.now() - load_date; };
     }();
     return window.performance.now();
-}
-
-function random(min, max)
-{
-    var rand = Math.random();
-    if (arguments.length === 0)
-        return rand;
-    else if (arguments.length === 1)
-        return rand * min;
-    else {
-        if (min > max) {
-            var tmp = min;
-            min = max;
-            max = tmp;
-        }
-        return rand * (max - min) + min;
-    }
 }
 
 function toHex(color)
