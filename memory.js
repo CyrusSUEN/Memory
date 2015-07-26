@@ -23,7 +23,7 @@ function tryReplacement() {
     // replacement that it has already made than to make a new replacement
 
     max = (millis() - timeStamp > 120000) ? 10 : 5;
-    mode = Math.floor(random(1, max));
+    mode = Math.floor(RiTa.random(1, max));
     timeStamp = millis();
 
     // switch statement which either changes adjectives, nouns,
@@ -61,7 +61,7 @@ function replaceAdj(toChange, replaceIdx) {
 
 	  if (asyns.length) {
 
-	    var newWord = asyns[Math.floor(random(asyns.length))];
+	    var newWord = asyns[Math.floor(RiTa.random(asyns.length))];
 	    if (dbug) console.log("replaceAdj(): '" + toChange + "' -> " + newWord);
 	    fireReplaceEvent(replaceIdx, newWord);
 	  }
@@ -74,12 +74,12 @@ function replaceAdv(toChange, replaceIdx) {
 
 	  if (dts.length > 0) {
 
-	    var randAdj = dts[Math.floor(random(dts.length))];
+	    var randAdj = dts[Math.floor(RiTa.random(dts.length))];
 	    wordnet.getAllSynonyms(randAdj, "a", function(asyns) {
 
 	      if (asyns.length > 0) {
 
-	        var adj = asyns[Math.floor(random(asyns.length))];
+	        var adj = asyns[Math.floor(RiTa.random(asyns.length))];
 	        var newStr = toAdverb(adj);
 	        if (dbug) console.log("Adverbify: '" + adj + "' -> " + newStr);
 
@@ -106,7 +106,7 @@ function replaceNoun(toChange, replaceIdx) {
 
 		if (nsyns.length > 0) {
 
-			var newStr = nsyns[Math.floor(random(nsyns.length))];
+			var newStr = nsyns[Math.floor(RiTa.random(nsyns.length))];
 
 			if (!endsWith(newStr, "ing")) {
 
@@ -154,7 +154,7 @@ function replaceVerb(toChange, replaceIdx) {
 
 		if (vsyns.length > 0) {
 
-			var newStr = vsyns[Math.floor(random(vsyns.length))];
+			var newStr = vsyns[Math.floor(RiTa.random(vsyns.length))];
 			var orig = newStr;
 
 			if (allpos[replaceIdx] === "vbg") {
